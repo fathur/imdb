@@ -1,0 +1,25 @@
+{
+  "name": "movies",
+  "description": "List all of imdb movies",
+  "main": "",
+  "authors": [
+    "Fathur Rohman <fathur_rohman17@yahoo.co.id>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "movies"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ]
+}
