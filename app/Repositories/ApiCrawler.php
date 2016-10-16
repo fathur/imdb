@@ -61,7 +61,6 @@ class ApiCrawler
 
             $this->console->info("Destroy {$dataShort->imdbID} from failed table.\n");
 
-
         } catch (MassAssignmentException $e) {
 
             $this->log->error('Movie IMDB', [
@@ -69,6 +68,8 @@ class ApiCrawler
                 'catch'   => 'MassAssignmentException',
                 'message' => $e->getMessage()
             ]);
+
+            $this->console->error("Error insert {$dataShort->imdbID}");
 
         } catch (\Symfony\Component\Debug\Exception\FatalErrorException $e) {
 
@@ -78,6 +79,8 @@ class ApiCrawler
                 'message' => $e->getMessage()
             ]);
 
+            $this->console->error("Error insert {$dataShort->imdbID}");
+
         } catch (\RuntimeException $e) {
 
             $this->log->error('Movie IMDB', [
@@ -86,19 +89,27 @@ class ApiCrawler
                 'message' => $e->getMessage()
             ]);
 
+            $this->console->error("Error insert {$dataShort->imdbID}");
+
         } catch (InvalidArgumentException $e) {
             $this->log->error('Movie IMDB', [
                 'imdb_id' => $dataShort->imdbID,
                 'catch'   => 'InvalidArgumentException',
                 'message' => $e->getMessage()
             ]);
-        } /*catch (\Exception $e) {
+
+            $this->console->error("Error insert {$dataShort->imdbID}");
+
+        } catch (\Exception $e) {
             $this->log->error('Movie IMDB', [
                 'imdb_id' => $dataShort->imdbID,
                 'catch'   => 'Exception',
                 'message' => $e->getMessage()
             ]);
-        }*/
+
+            $this->console->error("Error insert {$dataShort->imdbID}");
+
+        }
 
     }
 }
