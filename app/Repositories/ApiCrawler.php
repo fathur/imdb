@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Console\Commands\MovieApi;
+use App\Models\Fail;
 use App\Models\Movie;
 use App\Repositories\MovieConverter as M;
 use Illuminate\Database\Eloquent\MassAssignmentException;
@@ -54,7 +55,12 @@ class ApiCrawler
 
             $movie->save();
 
-            $this->console->info("Success insert {$dataShort->imdbID}\n");
+            $this->console->info("Success insert {$dataShort->imdbID}");
+
+            Fail::where('imdb_id', $dataShort->imdbID)->delete();
+
+            $this->console->info("Destroy {$dataShort->imdbID} from failed table.\n");
+
 
         } catch (MassAssignmentException $e) {
 
