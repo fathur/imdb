@@ -31,10 +31,10 @@ class MovieFail extends Command
      */
     public function handle()
     {
-        $offset = $this->option('offset');
-        $take = $this->option('take');
+        $offset = (int)$this->option('offset');
+        $take = (int)$this->option('take');
 
-        for ($i = $offset; $i <= $take; $i ++) {
+        for ($i = $offset; $i <= ($offset + $take); $i ++) {
             $this->info("Processing {$i}");
             $film = Film::where('imdb_id', $this->formatId($i))->count();
             if ($film == 0) {

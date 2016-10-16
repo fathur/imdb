@@ -45,17 +45,23 @@ class MovieApi extends Command
                 $bodyFull = json_decode($bodyFull);
 
 
-                $api = new ApiCrawler($this);
+                if ($bodyShort->Response == "True") {
 
-                if (Movie::where('imdb_id', $bodyShort->imdbID)->first()) {
-                    $this->info("Skip {$movie->imdb_id}\n");
+                    $api = new ApiCrawler($this);
 
-                    continue;
+                    if (Movie::where('imdb_id', $bodyShort->imdbID)->first()) {
+                        $this->info("Skip {$movie->imdb_id}\n");
+
+                        continue;
+                    }
+
+                    $api->saveToDatabase($bodyShort, $bodyFull);
+
+                } elseif ($bodyShort->Response == "False") {
+                    $this->error("Not found {$movie->imdb_id}");
+                    $this->info("");
+
                 }
-
-                $api->saveToDatabase($bodyShort, $bodyFull);
-
-
 
             }
         });
