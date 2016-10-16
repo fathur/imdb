@@ -13,7 +13,9 @@ class MovieFail extends Command
      *
      * @var string
      */
-    protected $signature = 'movie:fail';
+    protected $signature = 'movie:fail
+        {--O|offset= : start from id offset}
+        {--K|take= : how many data that you want take}';
 
     /**
      * The console command description.
@@ -29,10 +31,10 @@ class MovieFail extends Command
      */
     public function handle()
     {
+        $offset = $this->option('offset');
+        $take = $this->option('take');
 
-        $take = 1000000;
-
-        for ($i = 1; $i <= $take; $i ++) {
+        for ($i = $offset; $i <= $take; $i ++) {
             $this->info("Processing {$i}");
             $film = Film::where('imdb_id', $this->formatId($i))->count();
             if ($film == 0) {

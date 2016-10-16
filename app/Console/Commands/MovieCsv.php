@@ -4,14 +4,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class Movie extends Command
+class MovieCsv extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'movie
+    protected $signature = 'movie:csv
         {--F|file= : split file}
         {--O|offset= : start from id offset}
         {--K|take= : how many data that you want take}';

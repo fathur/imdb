@@ -2,7 +2,8 @@
 
 namespace App\Console;
 
-use App\Console\Commands\Movie;
+use App\Console\Commands\MovieCsv;
+use App\Console\Commands\MovieApi;
 use App\Console\Commands\MovieFail;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,8 +17,9 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\Inspire::class,
-        Movie::class,
-        MovieFail::class
+        MovieCsv::class,
+        MovieFail::class,
+        MovieApi::class
     ];
 
     /**

@@ -2,7 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Console\Commands\Movie as MovieCommand;
+use App\Console\Commands\MovieCsv as MovieCommand;
+use App\Repositories\MovieConverter as M;
 use App\Models\Crew;
 use App\Models\Genre;
 use App\Models\Movie;
@@ -133,27 +134,27 @@ class DumpLoader
                     $movie->imdb_id = isset($data[1]) ? $data[1] : null;
                     $movie->title = isset($data[2]) ? utf8_encode($data[2]) : null;
                     $movie->year = isset($data[3]) ? (int)$data[3] : null;
-                    $movie->rated = isset($data[4]) ? self::changeEmptyStringToNull($data[4]) : null;
-                    $movie->released = self::toTimestamp($data[7]);
-                    $movie->runtime = self::toMiliSeconds($data[5]);
-                    $movie->genres = isset($data[6]) ? self::explodeGenres($data[6]) : null;
-                    $movie->directors = isset($data[8]) ? self::explodeDirectors($data[8]) : null;
-                    $movie->writers = isset($data[9]) ? self::explodeWriters($data[9]) : null;
-                    $movie->actors = isset($data[10]) ? self::explodeActors($data[10]) : null;
+                    $movie->rated = isset($data[4]) ? M::changeEmptyStringToNull($data[4]) : null;
+                    $movie->released = M::toTimestamp($data[7]);
+                    $movie->runtime = M::toMiliSeconds($data[5]);
+                    $movie->genres = isset($data[6]) ? M::explodeGenres($data[6]) : null;
+                    $movie->directors = isset($data[8]) ? M::explodeDirectors($data[8]) : null;
+                    $movie->writers = isset($data[9]) ? M::explodeWriters($data[9]) : null;
+                    $movie->actors = isset($data[10]) ? M::explodeActors($data[10]) : null;
                     $movie->plot = [
                         'short' => isset($data[15]) ? utf8_encode($data[15]) : null,
                         'full'  => isset($data[16]) ? utf8_encode($data[16]) : null
                     ];
 
-                    $movie->awards = isset($data[19]) ? self::changeEmptyStringToNull(utf8_encode($data[19])) : null;
-                    $movie->poster = isset($data[14]) ? self::changeEmptyStringToNull($data[14]) : null;
-                    $movie->metascore = isset($data[11]) ? self::changeEmptyStringToNull($data[11]) : null;
+                    $movie->awards = isset($data[19]) ? M::changeEmptyStringToNull(utf8_encode($data[19])) : null;
+                    $movie->poster = isset($data[14]) ? M::changeEmptyStringToNull($data[14]) : null;
+                    $movie->metascore = isset($data[11]) ? M::changeEmptyStringToNull($data[11]) : null;
                     $movie->imdb_rating = isset($data[12]) ? floatval($data[12]) : null;
                     $movie->imdb_votes = isset($data[13]) ? (int)$data[13] : null;
                     $movie->type = isset($data[21]) ? utf8_encode($data[21]) : null;
                     $movie->last_update = $lastUpdate;
-                    $movie->languages = isset($data[17]) ? $this::explodeLanguages($data[17]) : null;
-                    $movie->countries = isset($data[18]) ? $this::explodeCountries($data[18]) : null;
+                    $movie->languages = isset($data[17]) ? M::explodeLanguages($data[17]) : null;
+                    $movie->countries = isset($data[18]) ? M::explodeCountries($data[18]) : null;
 
                     if ($movie->save()) {
 
@@ -329,150 +330,6 @@ class DumpLoader
 
     }
 
-    /**
-     * @param $runtime
-     *
-     * @return int
-     */
-    private static function toMiliSeconds($runtime)
-    {
-        $runtimeMinutes = explode(' ', $runtime);
 
-        return (int)$runtimeMinutes[0];
-    }
 
-    /**
-     * @param $released
-     *
-     * @return string
-     */
-    private static function toTimestamp($released)
-    {
-        return Carbon::parse($released)->toDateTimeString();
-    }
-
-    /**
-     * @param $countries
-     *
-     * @return array
-     */
-    private static function explodeCountries($countries)
-    {
-        return self::explodeData($countries);
-
-    }
-
-    /**
-     * @param $languages
-     *
-     * @return array
-     */
-    private static function explodeLanguages($languages)
-    {
-        return self::explodeData($languages);
-    }
-
-    /**
-     * @param $genres
-     *
-     * @return array
-     */
-    private static function explodeGenres($genres)
-    {
-        return self::explodeData($genres);
-    }
-
-    /**
-     * @param $directors
-     *
-     * @return array
-     */
-    private static function explodeDirectors($directors)
-    {
-        return self::explodeData($directors);
-
-    }
-
-    /**
-     * @param $actors
-     *
-     * @return array
-     */
-    private static function explodeActors($actors)
-    {
-        return self::explodeData($actors);
-
-    }
-
-    /**
-     * @param $writers
-     *
-     * @return array
-     */
-    private static function explodeWriters($writers)
-    {
-        $writers = explode(',', $writers);
-
-        $writers = array_filter($writers, function ($writer) {
-
-            if ($writer == "" || is_null($writer)) {
-                return false;
-            }
-
-            return true;
-        });
-
-        $writers = array_map(function ($item) {
-
-            // mendapatkan kata yang di dalam kurung, semuanya!!
-            preg_match_all('/\(.*?\)/', $item, $parenthesis);
-
-            // get name, yang ga ada di dalam kurung, dengan cara mengganti yang ada
-            // kurungnya dengan string kosong
-            $name = str_replace($parenthesis[0], '', $item);
-
-            // remove multiple space in this sentence
-            $name = preg_replace('!\s+!', ' ', trim($name));
-
-            return [
-
-                'name' => $name,
-                'as'   => isset($parenthesis[0][0]) ? substr($parenthesis[0][0], 1, - 1) : null
-            ];
-
-        }, $writers);
-
-        return $writers;
-    }
-
-    /**
-     * @param $genres
-     *
-     * @return array
-     */
-    private static function explodeData($data)
-    {
-        $data = explode(',', $data);
-
-        $data = array_filter($data, function ($datum) {
-
-            if ($datum == "" || is_null($datum)) {
-                return false;
-            }
-
-            return true;
-        });
-
-        $data = array_map(function ($datum) {
-            return utf8_encode(trim($datum));
-        }, $data);
-
-        return $data;
-    }
-
-    private static function changeEmptyStringToNull($string)
-    {
-        if ($string == "")
-            return null;
-    }
 }
