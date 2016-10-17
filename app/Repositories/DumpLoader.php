@@ -26,7 +26,7 @@ class DumpLoader
 
     private $offset;
 
-    private $chunk = 10;
+    private $chunk = 1000;
 
     private $log;
 
